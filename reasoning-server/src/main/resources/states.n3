@@ -1,0 +1,98 @@
+# State Transitions
+# Defines the concept of a state and a state change
+
+# Standard namespaces
+@prefix : <ex#>.
+@prefix ex: <http://example.org/#>.
+@prefix http: <http://www.w3.org/2011/http#>.
+@prefix st: <http://purl.org/restdesc/states#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+
+# Domain-specific namespaces
+@prefix e: <http://eulersharp.sourceforge.net/2003/03swap/log-rules#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+
+st:State a rdfs:Class;
+         rdfs:label "A consistent state of (parts of) the world at a certain point in time."@en.
+
+st:StateChange a rdfs:Class;
+               rdfs:label "A transition from one state to another."@en.
+
+st:added a rdf:Property, owl:FunctionalProperty;
+         rdfs:label "added triples"@en;
+         rdfs:domain st:StateChange;
+         rdfs:range log:Formula.
+
+st:removed a rdf:Property, owl:FunctionalProperty;
+           rdfs:label "removed triples"@en;
+           rdfs:domain st:StateChange;
+           rdfs:range log:Formula.
+
+st:replaced a rdf:Property, owl:FunctionalProperty;
+           rdfs:label "replace triples"@en;
+           rdfs:domain st:StateChange;
+           rdfs:range log:Formula.
+
+st:parent a rdf:Property, owl:FunctionalProperty;
+          rdfs:label "is based upon"@en;
+          rdfs:domain st:StateChange;
+          rdfs:range st:State.
+
+st:derivedFrom a rdf:Property, owl:FunctionalProperty;
+               rdfs:label "is derived from"@en;
+               rdfs:domain st:State;
+               rdfs:range st:StateChange.
+
+# Derive the complete state from a state change
+{
+  ?change st:added ?added;
+          st:removed ?removed;
+          st:parent ?parent.
+
+  (?parent ?removed) e:graphDifference ?inherited.
+  (?inherited ?added) log:conjunction ?newState.
+}
+=>
+{
+  ?newState a st:State;
+            st:derivedFrom ?change.
+}.
+
+
+{
+ ?change a st:StateChange.
+
+  ?change st:replaced ?replaced;
+          st:parent ?parent.
+
+  (?S ?SP) e:findall ( { ?a ?b ?c }
+      { ?parent log:includes {?a ?b ?c}. ?replaced log:includes {?a ?b ?x}.}
+      ?ITEMS
+    ) .
+  ?ITEMS log:conjunction ?conj.
+  (?parent ?conj) e:graphDifference ?inherited.
+  (?inherited ?replaced) log:conjunction ?newState.
+}
+=>
+{
+  ?newState a st:State;
+            st:derivedFrom ?change.
+}.
+
+st:InitialState a rdfs:Class;
+         rdfs:label "Defines the current state of a device."@en.
+
+
+{
+    (?S ?SP) e:findall ( ?L
+      { ?L a st:InitialState. }
+      ?data
+    ) .
+  ?data log:conjunction ?out.
+}=>{
+
+  ?out a st:State.
+}.

@@ -1,0 +1,54 @@
+ <div class="page-header">
+        <h2>Select Workspace</h2>
+      </div>
+<ul class="list-group">
+	<% _.each(workspaces, function(workspace){ %>
+  <li class="list-group-item" data-id="<%= workspace.id %>">
+ 
+
+<div class="btn-group  btn-group-xs pull-right">
+  <a href="#<%= workspace.id %>" class="btn btn-default">Open Workspace</a>
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#" class="rename"><i class="fa fa-pencil"></i> Rename</a></li>
+    <li><a href="#" class="delete"><i class="fa fa-trash-o"></i> Delete</a></li>
+    <li class="divider"></li>
+    <li><a href="#" class="copy"><i class="fa fa-files-o"></i> Copy workspace</a></li>
+  </ul>
+</div>
+
+    <a href="#<%= workspace.id %>"><% if(workspace.type=="remote"){ %><i class="fa fa-globe"></i><% }else{ %><i class="fa fa-flask"></i><% } %> <%= workspace.name %></a>
+  </li>
+
+	<% }); %>
+</ul>
+<br />
+<br />
+ <div class="page-header">
+        <h3><i class="fa fa-flask"></i> Create Virtual Workspace</h3>
+      </div>
+<form>
+  <div class="form-group">
+    <label for="workspace_name">Workspace name</label>
+    <input type="email" class="form-control"  id="workspace_name" placeholder="My workspace">
+  </div> 
+  <button type="submit" class="btn btn-default"  id="workspace_create">Create</button>
+</form> 
+ <div class="page-header">
+        <h3><i class="fa fa-globe"></i> Connect Semantic Server</h3>
+      </div>
+<form>
+  <div class="form-group">
+    <label for="workspace_remote_name">Workspace name</label>
+    <input type="email" class="form-control"  id="workspace_remote_name" placeholder="My workspace">
+  </div> 
+  <div class="form-group">
+    <label for="workspace_remote_url">Semantic Server URL</label>
+    <input type="email" class="form-control"  id="workspace_remote_url" value="coap://localhost:5681" placeholder="coap://...">
+  </div> 
+  <button type="submit" class="btn btn-default"  id="workspace_remote_create">Create</button>
+</form>
+<br />

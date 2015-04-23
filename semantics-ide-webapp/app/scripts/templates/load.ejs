@@ -1,0 +1,13 @@
+<div class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content"> 
+      <div class="modal-body" style="padding:0;">
+        <div class="list-group" style="margin:0">
+        <% _.each(usecases, function(usecase){ %>
+          <div class="list-group-item"><button class="btn btn-xs btn-success pull-right" data-file="<%=usecase.file %>">Load configuration</button><%=usecase.name %></div>
+        <% }); %>
+        </div>
+      </div> 
+    </div>
+  </div>
+</div>

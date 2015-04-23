@@ -1,0 +1,18 @@
+
+<% if(!device.remote){ %>
+<input type="text" value="<%=device.name %>" placeholder="Device name" class="form-control input-lg device-title" />
+<% } else { %>
+<h2 style="margin-top: 13px;"><%=device.name %>
+<small><%=device.url %></small></h2>
+<% } %>
+<textarea></textarea>
+<% if(!device.remote){ %>
+<button class="pull-right btn btn-lg btn-success" id="save"><i class="fa fa-floppy-o"></i> <%=isNew?"Create device":"Update device" %></button>
+<% }
+if(!isNew){ %>
+<a class="pull-right btn btn-default btn-lg" href="#<%=window.workspace%>/device/<%=device.id %>/preview" id="processedfile" style="margin-right:10px"><i class="fa fa-cogs"></i> View processed file</a>
+<% if(!device.remote){ %>
+<button class="btn btn-lg btn-danger" id="delete"><i class="fa fa-trash"></i> Delete</button>
+<% 
+}
+} %>

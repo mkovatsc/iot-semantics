@@ -1,0 +1,44 @@
+# Semantic Questions
+# Standard namespaces
+@prefix local: <>.
+@prefix : <ex#>.
+@prefix ex: <http://example.org/#>.
+@prefix http: <http://www.w3.org/2011/http#>.
+@prefix st: <http://purl.org/restdesc/states#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix e: <http://eulersharp.sourceforge.net/2003/03swap/log-rules#>.
+
+
+{
+    ?q a :question.
+    ?a a :answer.
+    ?url a local:url.
+    ?a :answers ?q.
+
+    (?S ?SP) e:findall ( { ?a ?b ?c }
+        { ?a ?b ?c }
+        ?items
+        ).
+    ?items log:conjunction ?triples1.
+    (?triples1 {?q :answer ?a.}) log:conjunction ?triples.
+}
+=>
+{
+    _:request http:methodName "PUT";
+        http:requestURI (?url "/answer");
+        http:reqBody ?triples.
+    ?q :answer ?a.
+}.
+
+
+# Match unanswered
+{ ?X a :question.
+  (?S ?SP) e:findall ( ?L
+    { ?X :answer ?L }
+    () # this empty list constrains the result of findall to be empty,
+    # this is, ?X is such that the set of ?L satisfying ?X :answer ?L
+    # is empty.
+  ) .
+} => {
+  ?X  a :openquestion }.

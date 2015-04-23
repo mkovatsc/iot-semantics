@@ -1,0 +1,27 @@
+<h3 style="margin-top:5px"><%=question.questionText %></h3>
+<% if(question.options&&question.options.length>0){ %>
+<div class="row">
+<div class="col-md-9"> 
+<% } %>
+<input type="text" value="" placeholder="Answer" class="form-control input-lg device-title" />
+<% if(question.options&&question.options.length>0){ %>
+</div>
+
+<div class="col-md-3"> 
+
+<div class="btn-group btn-block">
+  <button type="button" class="btn btn-lg btn-block btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    Options <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+	<% _.each(question.options, function(option){ %>
+    <li data-id="<%=option.id%>"><a href="#" class="select_option"><%=option.name%></a></li>
+	<% }); %>
+  </ul>
+</div>
+</div>
+</div> 
+<% } %>
+<div style="text-align:right">
+	<button class="btn  btn-success" id="save">Save</button>
+</div>

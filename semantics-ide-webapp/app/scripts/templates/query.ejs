@@ -1,0 +1,27 @@
+<div  class="col-md-3" id="querylist"></div>
+<div class="col-md-9 queryview">
+  <h2>Query<% if(query.id!=null){ %> "<%=query.name %>"<% } %></h2>
+  <textarea class="query"></textarea>
+  <h3>Input Triples</h3>
+  <textarea class="input"></textarea>
+  <div style="text-align:right; margin-bottom:12px">
+    <% if(query.id!=null){ %>
+    <button class="btn pull-left btn-lg btn-danger" id="delete"><i class="fa fa-trash"></i> Delete</button>
+    <% } %>
+      <button type="button" class="btn btn-lg btn-default" id="reasonerOutput">Get reasoner output</button>
+    <div class="btn-group">
+      <button type="button" class="btn btn-lg btn-success" id="executeQuery">Execute query</button>
+      <button type="button" class="btn btn-lg btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+      <span class="caret"></span>
+      <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <% if(query.id!=null){ %>
+        <li><a href="#" class="update">Update current query</a></li>
+        <% } %>
+        <li><a href="#" class="store">Store as a new query</a></li>
+      </ul>
+    </div>
+  </div>
+  <textarea class="result"></textarea>
+</div>

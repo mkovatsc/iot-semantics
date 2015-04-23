@@ -1,0 +1,45 @@
+
+<% 
+var c10 = d3.scale.category10();
+var render=function (val){
+	if(_.isArray(val)){
+		for(var i=0;i<val.length;i++){
+			render(val[i]);
+		}
+	}else if(_.isString(val)){
+		%><%-val %><%
+	}else{
+		if(results[val.ref]!=undefined){
+
+		%><span class="label label-success" style="background:<%= c10(val.ref) %>; font-size: 14px;"><%-results[val.ref] %></span><%
+		}else{
+
+		%><span class="label label-success" style="background:<%= c10(val.ref) %>; font-size: 14px;">$<%-letter(val.ref) %></span><%
+		}
+	}
+}
+
+_.each(requests, function(request){
+%>
+
+<div class="panel panel-default <% if(request.done==true){ if(request.failed==true){ %>panel-danger <% }else{ %>panel-success <% } } %> request request_<%= request.num %>">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+ 
+    <% if(request.running==true){ %><i class="fa fa-spinner fa-spin"></i><% } %>
+    <% if(request.done==true){ if(request.failed==true){ %><i class="fa fa-exclamation-triangle"></i><% }else{ %><i class="fa fa-check"></i><% } } %>
+    
+ <span class="label label-<%-request.failed?'danger':'success'%> pull-right"><%-request.status %></span>
+<b><%=request.method %></b> <% render(request.uri) %></h3>
+  </div>
+  <div class="panel-body" style="">
+  <% if(request.failed){ %><h4>Response:</h4><pre><%-request.payload %></pre><% } %>
+  <% if(request.resp){ %><h4>Response Body</h4><pre><%render(request.resp) %></pre><% } %>
+  <% if(request.reqBody){ %><h4>Request Body</h4><pre><%render(request.reqBody) %></pre><% } %>
+  </div>
+</div>
+	<%
+})%>
+<% if(window.workspaces.get(window.workspace).get('type')=='remote'&&!running){ %>
+<button class="btn btn-success btn-lg btn-block run"><i class="fa fa-play"></i> Run Execution Plan</button>
+<% } %>

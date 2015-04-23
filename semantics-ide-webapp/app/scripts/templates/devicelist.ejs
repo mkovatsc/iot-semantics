@@ -1,0 +1,6 @@
+<ul class="nav nav-pills nav-stacked">
+	<% _.each(devices, function(device){ %>
+	<li data-id="<%= device.id %>"><a href="#<%=window.workspace%>/device/<%= device.id %>"><i class="devicetoggle fa <% if(!device.disabled) {%>fa-toggle-on<% }else{ %>fa-toggle-off<% } %>"></i> <%= device.name %><% if(device.errors!=undefined&&device.errors.length>0){ %> <i class="pull-right fa fa-exclamation-triangle"></i><% } %></a></li>
+	<% }); %>
+	<li data-id="new"><a href="#<%=window.workspace%>"><i class="fa fa-plus"></i> Add device</a></li> 
+</ul>

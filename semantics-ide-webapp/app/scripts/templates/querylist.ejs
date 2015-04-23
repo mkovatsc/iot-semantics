@@ -1,0 +1,6 @@
+<ul class="nav nav-pills nav-stacked">
+	<% _.each(queries, function(query){ %>
+	<li data-id="<%= query.id %>"><a href="#<%=window.workspace%>/<%= base_url %>/<%= query.id %>">
+	<%= query.name %></a></li>
+	<% }); %>
+</ul>
