@@ -25,8 +25,8 @@ import java.util.Set;
 
 public class Reasoner {
 
-	public static Set<ExtractedRequest> getExecutionPlan(List<String> ruleURIs, String goal) {
-		N3Document parsedProof = proofGoal(ruleURIs, goal, true);
+	public static Set<ExtractedRequest> getExecutionPlan(String baseUrl, List<String> ruleURIs, String goal) {
+		N3Document parsedProof = proofGoal(baseUrl, ruleURIs, goal, true, false);
 		HashMap<String, Lemma> lemmas = extractLemmas(parsedProof);
 		// Get first lemma
 		Lemma lemma1 = lemmas.get("<#lemma1>");
@@ -38,9 +38,9 @@ public class Reasoner {
 		return null;
 	}
 
-	public static N3Document proofGoal(List<String> ruleURIs, String goal, boolean quick_answer) {
+	public static N3Document proofGoal(String baseUrl, List<String> ruleURIs, String goal, boolean quick_answer, boolean no_proof) {
 		String proof;
-		proof = doProof(ruleURIs, goal, quick_answer) + "\n\n";
+		proof = doProof(baseUrl, ruleURIs, goal, quick_answer, no_proof) + "\n\n";
 		N3Parser.N3DocContext tdc = parseProof(proof);
 		N3Document doc = transformParseTree(tdc);
 		String path = "file://" + new File(new File(goal).getParent()).getAbsolutePath() + "/";
@@ -104,14 +104,24 @@ public class Reasoner {
 		return np.n3Doc();
 	}
 
-	public static String doProof(List<String> ruleURIs, String queryURI, boolean quick_answer) {
+	public static String doProof(String baseUrl, List<String> ruleURIs, String queryURI, boolean quick_answer, boolean no_proof) {
 		List<String> arguments = new ArrayList<String>();
-		// arguments.add("--no-qvars");
+		
 		if (quick_answer) {
 			// needed to avoid cyclic proofs
 			arguments.add("--quick-answer");
 		}
-		arguments.addAll(ruleURIs);
+
+		if (no_proof) {
+			arguments.add("--nope");
+		}
+
+		for (String uri : ruleURIs) {
+			if (uri.startsWith(baseUrl)) {
+				uri = uri.substring(baseUrl.length() + 1);
+			}
+			arguments.add(uri);
+		}
 
 		arguments.add("--step");
 		arguments.add("20000000");
@@ -120,18 +130,13 @@ public class Reasoner {
 		arguments.add("--query");
 		arguments.add(queryURI);
 
-		// String eyeCommand = "eye ";
-		// for (String arg : arguments) {
-		// eyeCommand += arg + " ";
-		// }
-		// System.out.println("EYE Command: " + eyeCommand);
-
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			PrintStream ps = new PrintStream(os);
 			ByteArrayOutputStream os2 = new ByteArrayOutputStream();
 			PrintStream ps2 = new PrintStream(os2);
 			euler.Process proof = ProofEngine.createProofEngine(arguments.toArray(new String[0]), ps, ps2);
+			euler.Process.setRunDirectory(baseUrl);
 			proof.execute(80000);
 			return os.toString("UTF8");
 		} catch (UnsupportedEncodingException e) {

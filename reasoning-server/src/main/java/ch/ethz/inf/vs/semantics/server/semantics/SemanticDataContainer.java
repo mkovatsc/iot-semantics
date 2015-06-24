@@ -148,9 +148,9 @@ public class SemanticDataContainer {
 				uris.add(answersFile.getAbsolutePath());
 			}
 			if (raw) {
-				r = Reasoner.doProof(uris, temp.getAbsolutePath(), false);
+				r = Reasoner.doProof(fileContainer.toFile().getAbsolutePath(), uris, temp.getAbsolutePath(), false, false);
 			} else {
-				N3Document result = Reasoner.proofGoal(uris, temp.getAbsolutePath(), false);
+				N3Document result = Reasoner.proofGoal(fileContainer.toFile().getAbsolutePath(), uris, temp.getAbsolutePath(), false, true);
 
 				BlankNodePropertyList bn = null;
 				for (N3Element.Statement k : result.statements) {
@@ -223,7 +223,7 @@ public class SemanticDataContainer {
 			if (answersFileActive) {
 				uris.add(answersFile.getAbsolutePath());
 			}
-			Set<ExtractedRequest> results = Reasoner.getExecutionPlan(uris, temp.getAbsolutePath());
+			Set<ExtractedRequest> results = Reasoner.getExecutionPlan(fileContainer.toFile().getAbsolutePath(), uris, temp.getAbsolutePath());
 
 			r = Reasoner.serializeExecutionPlan(results).toString();
 

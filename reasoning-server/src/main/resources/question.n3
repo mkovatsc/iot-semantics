@@ -12,7 +12,7 @@
 
 {
     ?q a :question.
-    ?a a :answer.
+    ?a a :Answer.
     ?url a local:url.
     ?a :answers ?q.
 
@@ -21,23 +21,23 @@
         ?items
         ).
     ?items log:conjunction ?triples1.
-    (?triples1 {?q :answer ?a.}) log:conjunction ?triples.
+    (?triples1 {?q :hasAnswer ?a.}) log:conjunction ?triples.
 }
 =>
 {
     _:request http:methodName "PUT";
         http:requestURI (?url "/answer");
         http:reqBody ?triples.
-    ?q :answer ?a.
+    ?q :hasAnswer ?a.
 }.
 
 
 # Match unanswered
 { ?X a :question.
   (?S ?SP) e:findall ( ?L
-    { ?X :answer ?L }
+    { ?X :hasAnswer ?L }
     () # this empty list constrains the result of findall to be empty,
-    # this is, ?X is such that the set of ?L satisfying ?X :answer ?L
+    # this is, ?X is such that the set of ?L satisfying ?X :hasAnswer ?L
     # is empty.
   ) .
 } => {

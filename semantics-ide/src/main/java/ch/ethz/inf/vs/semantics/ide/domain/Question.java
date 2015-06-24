@@ -51,7 +51,7 @@ public class Question {
 			Iri answerObject = new Iri(input, "in:" + UUID.randomUUID().toString().replace("-", ""));
 
 			Iri replyType = input.importToDocument((Iri) RDFResource.get(":replyType"));
-			RDFResource t = new RDFResource(answerObject).add(new Iri(input, ":name"), new Literal("\"" + StringEscapeUtils.escapeJava(getAnswer()) + "\"")).add(new Verb("a"), new Iri(input, ":answer")).add(new Verb("a"), replyType);
+			RDFResource t = new RDFResource(answerObject).add(new Iri(input, ":name"), new Literal("\"" + StringEscapeUtils.escapeJava(getAnswer()) + "\"")).add(new Verb("a"), new Iri(input, ":Answer")).add(new Verb("a"), replyType);
 
 			return sendResponse(t);
 
@@ -77,7 +77,7 @@ public class Question {
 		t = input.importToDocument(t);
 		t.add(new Iri(input, ":answers"), question);
 		input.statements.add(t);
-		input.statements.add(new RDFResource(question).add(new Iri(input, ":answer"), (N3Element.Object) t.subject));
+		input.statements.add(new RDFResource(question).add(new Iri(input, ":hasAnswer"), (N3Element.Object) t.subject));
 
 		return input.toString();
 	}
