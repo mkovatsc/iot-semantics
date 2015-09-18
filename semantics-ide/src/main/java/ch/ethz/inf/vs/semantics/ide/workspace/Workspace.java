@@ -5,10 +5,15 @@ import ch.ethz.inf.vs.semantics.ide.domain.Device;
 import ch.ethz.inf.vs.semantics.ide.domain.Query;
 import ch.ethz.inf.vs.semantics.ide.domain.WorkspaceInfo;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 
 public abstract class Workspace {
+
+	protected int id;
+
 	HashMap<Integer, Query> queries = new HashMap<>();
 
 	public abstract Device deleteDevice(int id);
@@ -73,4 +78,22 @@ public abstract class Workspace {
 	public abstract WorkspaceInfo getWorkspaceInfo();
 
 	public abstract void setName(String name);
+
+	public abstract void save();
+
+	public void remove() {
+		try {
+			getFile().delete();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public File getFile() throws IOException {
+		File file = new File(WorkspaceManager.getFolder(), "workspace"+id+".json");
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		return file;
+	}
 }

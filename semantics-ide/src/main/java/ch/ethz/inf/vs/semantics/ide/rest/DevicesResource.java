@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.semantics.ide.rest;
 
 import ch.ethz.inf.vs.semantics.ide.domain.Device;
+import ch.ethz.inf.vs.semantics.ide.workspace.Workspace;
 import ch.ethz.inf.vs.semantics.ide.workspace.WorkspaceManager;
 import restx.annotations.*;
 import restx.factory.Component;
@@ -16,13 +17,19 @@ public class DevicesResource {
 	@PermitAll
 	public static Device deleteDevice(int workspace, int id) {
 
-		return WorkspaceManager.get(workspace).deleteDevice(id);
+		Workspace ws = WorkspaceManager.get(workspace);
+		Device device = ws.deleteDevice(id);
+		ws.save();
+		return device;
 	}
 
 	@POST("/{workspace}/devices")
 	@PermitAll
 	public static Device postDevice(int workspace, Device msg) {
-		return WorkspaceManager.get(workspace).addDevice(msg);
+		Workspace ws = WorkspaceManager.get(workspace);
+		Device device = ws.addDevice(msg);
+		ws.save();
+		return device;
 	}
 
 	@GET("/{workspace}/devices")
@@ -40,6 +47,9 @@ public class DevicesResource {
 	@PUT("/{workspace}/devices/{id}")
 	@PermitAll
 	public Device putDevice(int workspace, int id, Device msg) {
-		return WorkspaceManager.get(workspace).updateDevice(id, msg);
+		Workspace ws = WorkspaceManager.get(workspace);
+		Device device = ws.updateDevice(id, msg);
+		ws.save();
+		return device;
 	}
 }

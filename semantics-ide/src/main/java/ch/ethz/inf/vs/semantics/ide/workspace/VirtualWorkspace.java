@@ -7,7 +7,7 @@ import ch.ethz.inf.vs.semantics.ide.domain.WorkspaceInfo;
 import ch.ethz.inf.vs.semantics.parser.N3Utils;
 import ch.ethz.inf.vs.semantics.server.semantics.SemanticDataContainer;
 import ch.ethz.inf.vs.semantics.server.semantics.SemanticDescription;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -19,7 +19,6 @@ import java.util.HashSet;
 
 public class VirtualWorkspace extends Workspace {
 
-	private int id;
 	private String name;
 	public HashMap<Integer, Device> devices;
 	SemanticDataContainer semanticDataContainer;
@@ -162,6 +161,17 @@ public class VirtualWorkspace extends Workspace {
 		this.name = name;
 	}
 
+	@Override
+	public void save() {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			WorkspaceInfo info = getWorkspaceInfo();
+			info.setBackup(getBackup());
+			mapper.writeValue(getFile(), info);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	private void update(Device msg) {
 		SemanticDescription semanticDescription = msg.getSemanticDescription();
 		try {

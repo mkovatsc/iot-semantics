@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +19,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class RemoteWorkspace extends Workspace {
-	private final int id;
 	private String name;
 	private final String url;
 	private final ObjectMapper mapper;
@@ -152,6 +152,17 @@ public class RemoteWorkspace extends Workspace {
 			addQuery(q);
 		}
 		return backup;
+	}
+
+	@Override
+	public void save() {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			WorkspaceInfo info = getWorkspaceInfo();
+			mapper.writeValue(getFile(), info);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

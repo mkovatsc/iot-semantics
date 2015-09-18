@@ -1,7 +1,10 @@
 package ch.ethz.inf.vs.semantics.ide.workspace;
 
 import ch.ethz.inf.vs.semantics.ide.domain.WorkspaceInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,12 +12,23 @@ import java.util.Map;
 
 public class WorkspaceManager {
 	private static volatile WorkspaceManager instance = null;
+	private static File persistenceFolder;
+	private static Object lock = new Object();
 	private Map<Integer, Workspace> workspaces;
 	private int ID;
 
 	private WorkspaceManager() {
 		workspaces = new HashMap<>();
 		ID = 1;
+		for (File ws : getFolder().listFiles()) {
+			ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
+			try {
+				WorkspaceInfo workspaceinfo = mapper.readValue(ws, WorkspaceInfo.class);
+				createWorkspace(workspaceinfo);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static WorkspaceManager getInstance() {
@@ -26,6 +40,20 @@ public class WorkspaceManager {
 			}
 		}
 		return instance;
+	}
+
+	public static File getFolder() {
+		if (persistenceFolder==null) {
+			synchronized (lock) {
+				if (persistenceFolder==null) {
+					persistenceFolder = new File("workspaces");
+					if (!persistenceFolder.exists()) {
+						persistenceFolder.mkdir();
+					}
+				}
+			}
+		}
+		return persistenceFolder;
 	}
 
 	public Workspace getWorkspace(int id) {
@@ -45,15 +73,23 @@ public class WorkspaceManager {
 	}
 
 	public WorkspaceInfo deleteWorkspace(int id) {
-		WorkspaceInfo ws = get(id).getWorkspaceInfo();
+		Workspace workspace = get(id);
+		WorkspaceInfo ws = workspace.getWorkspaceInfo();
 		workspaces.remove(id);
+		workspace.remove();
 		return ws;
 	}
 
 	public WorkspaceInfo createWorkspace(WorkspaceInfo ws) {
 		synchronized (this) {
-			int id = ID;
-			ID++;
+			int id;
+			if (!workspaces.containsKey(ws.getId()) && ws.getId()!=0) {
+				id = ws.getId();
+				ID = Math.max(ID, id + 1);
+			} else {
+				id = ID;
+				ID++;
+			}
 			Workspace workspace;
 			if ("remote".equals(ws.getType())) {
 
@@ -63,6 +99,10 @@ public class WorkspaceManager {
 				workspace = new VirtualWorkspace(id, ws.getName());
 			}
 			workspaces.put(id, workspace);
+			if (ws.getBackup()!=null) {
+				workspace.loadBackup(ws.getBackup());
+			}
+			workspace.save();
 			return workspace.getWorkspaceInfo();
 		}
 	}

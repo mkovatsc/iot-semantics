@@ -4,6 +4,7 @@ import ch.ethz.inf.vs.semantics.ide.domain.N3Linter;
 import ch.ethz.inf.vs.semantics.ide.domain.Query;
 import ch.ethz.inf.vs.semantics.ide.domain.QueryResult;
 import ch.ethz.inf.vs.semantics.ide.domain.SemanticsErrors;
+import ch.ethz.inf.vs.semantics.ide.workspace.Workspace;
 import ch.ethz.inf.vs.semantics.ide.workspace.WorkspaceManager;
 import restx.annotations.*;
 import restx.factory.Component;
@@ -19,7 +20,10 @@ public class QueryResource {
 	@POST("/{workspace}/queries")
 	@PermitAll
 	public static Query postQuery(int workspace, Query msg) {
-		return WorkspaceManager.get(workspace).addQuery(msg);
+		Workspace ws = WorkspaceManager.get(workspace);
+		Query query = ws.addQuery(msg);
+		ws.save();
+		return query;
 	}
 
 	@GET("/{workspace}/queries")
@@ -37,13 +41,21 @@ public class QueryResource {
 	@DELETE("/{workspace}/queries/{id}")
 	@PermitAll
 	public Query deleteQuery(int workspace, int id) {
-		return WorkspaceManager.get(workspace).deleteQuery(id);
+		Workspace ws = WorkspaceManager.get(workspace);
+		Query query = ws.deleteQuery(id);
+		ws.save();
+		return query;
 	}
 
 	@PUT("/{workspace}/queries/{id}")
 	@PermitAll
-	public Query putQuery(int workspace, int id, Query msg) {
-		return WorkspaceManager.get(workspace).updateQuery(id, msg);
+	public Query putQuery(int workspace, int id,
+						  Query msg
+	) {
+		Workspace ws = WorkspaceManager.get(workspace);
+		Query query = ws.updateQuery(id, msg);
+		ws.save();
+		return query;
 	}
 
 	@GET("/{workspace}/hints")

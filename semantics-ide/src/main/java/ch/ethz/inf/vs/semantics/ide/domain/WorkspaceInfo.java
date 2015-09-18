@@ -4,6 +4,7 @@ public class WorkspaceInfo {
 
 	private int id;
 	private String name;
+	private Backup backup;
 	private String type;
 	private String url;
 
@@ -46,5 +47,13 @@ public class WorkspaceInfo {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public Backup getBackup() {
+		return backup;
+	}
+
+	public void setBackup(Backup backup) {
+		this.backup = backup;
 	}
 }

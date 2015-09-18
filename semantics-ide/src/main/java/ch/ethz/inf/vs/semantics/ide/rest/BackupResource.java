@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.semantics.ide.rest;
 
 import ch.ethz.inf.vs.semantics.ide.domain.Backup;
 import ch.ethz.inf.vs.semantics.ide.domain.UseCase;
+import ch.ethz.inf.vs.semantics.ide.workspace.Workspace;
 import ch.ethz.inf.vs.semantics.ide.workspace.WorkspaceManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,10 @@ public class BackupResource {
 	@POST("/{workspace}/all")
 	@PermitAll
 	public Backup postBackup(int workspace, Backup backup) {
-		return WorkspaceManager.get(workspace).loadBackup(backup);
+		Workspace ws = WorkspaceManager.get(workspace);
+		ws.loadBackup(backup);
+		ws.save();
+		return backup;
 	}
 
 	@GET("/{workspace}/load/{file}")
