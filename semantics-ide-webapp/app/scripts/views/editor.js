@@ -40,7 +40,7 @@ define([
                         window.questions.fetch({
                             reset: true
                         });
-                        window.location.hash = "#device/" + model.id;
+                        window.location.hash = "#" + window.workspace + "/device/" + model.id;
                     }
                 });
             }
@@ -53,7 +53,7 @@ define([
                 success: function(model) {
                     window.forceUpdateHints();
                     self.collection.remove(model);
-                    window.location.hash = "#";
+                    window.location.hash = "#" + window.workspace;
                     setTimeout(function() {
                         self.$("#save").button("reset");
                     }, 200);

@@ -185,7 +185,7 @@ define([
                     success: function(model) {
                         self.input_text = self.input.getValue();
                         self.query_text = self.query.getValue();
-                        window.location.hash = "#" + self.base_url + "/" + model.id;
+                        window.location.hash = "#" + window.workspace + "/" + self.base_url + "/" + model.id;
                         button.button('reset');
                     }
                 });
@@ -223,7 +223,7 @@ define([
                 success: function(model) {
                     self.collection.remove(model);
                     self.current = null;
-                    window.location.hash = "#" + self.base_url;
+                    window.location.hash = "#" + window.workspace + "/" + self.base_url;
                 }
             });
         },
@@ -256,7 +256,7 @@ define([
         },
 
         run: function(){
-            
+
         }
 
     });
