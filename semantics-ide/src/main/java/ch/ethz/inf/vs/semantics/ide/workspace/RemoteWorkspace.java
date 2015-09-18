@@ -151,6 +151,7 @@ public class RemoteWorkspace extends Workspace {
 		for (Query q : backup.getQueries()) {
 			addQuery(q);
 		}
+		save();
 		return backup;
 	}
 

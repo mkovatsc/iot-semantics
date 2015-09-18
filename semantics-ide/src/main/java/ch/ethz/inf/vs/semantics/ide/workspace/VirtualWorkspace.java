@@ -130,7 +130,6 @@ public class VirtualWorkspace extends Workspace {
 
 	@Override
 	public Backup loadBackup(Backup backup) {
-
 		semanticDataContainer.clearAnswers();
 		ArrayList<Device> devices = new ArrayList<Device>();
 		devices.addAll(getDevices());
@@ -148,6 +147,7 @@ public class VirtualWorkspace extends Workspace {
 		for (Query q : backup.getQueries()) {
 			addQuery(q);
 		}
+		save();
 		return backup;
 	}
 

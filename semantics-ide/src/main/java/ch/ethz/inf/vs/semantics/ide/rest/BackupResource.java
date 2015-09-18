@@ -27,7 +27,6 @@ public class BackupResource {
 	public Backup postBackup(int workspace, Backup backup) {
 		Workspace ws = WorkspaceManager.get(workspace);
 		ws.loadBackup(backup);
-		ws.save();
 		return backup;
 	}
 
