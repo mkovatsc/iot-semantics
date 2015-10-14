@@ -11,10 +11,11 @@ public class WorkspaceInfo {
 	public WorkspaceInfo() {
 	}
 
-	public WorkspaceInfo(int id, String name, String type) {
+	public WorkspaceInfo(int id, String name, String type, String url) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
+		this.url = url;
 	}
 
 	public int getId() {

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -168,7 +167,7 @@ public class RemoteWorkspace extends Workspace {
 
 	@Override
 	public WorkspaceInfo getWorkspaceInfo() {
-		return new WorkspaceInfo(id, name, "remote");
+		return new WorkspaceInfo(id, name, "remote", url);
 	}
 
 	@Override

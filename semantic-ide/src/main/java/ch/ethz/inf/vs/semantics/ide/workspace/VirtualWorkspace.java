@@ -153,7 +153,7 @@ public class VirtualWorkspace extends Workspace {
 
 	@Override
 	public WorkspaceInfo getWorkspaceInfo() {
-		return new WorkspaceInfo(id, name, "virtual");
+		return new WorkspaceInfo(id, name, "virtual", null);
 	}
 
 	@Override
