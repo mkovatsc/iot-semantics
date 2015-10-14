@@ -132,4 +132,7 @@ public class N3Document implements N3Element, Serializable {
 		return prefixes.get(prefix + ":");
 	}
 
+	public HashMap<String,Prefix> getPrefixes() {
+		return prefixes;
+	}
 }

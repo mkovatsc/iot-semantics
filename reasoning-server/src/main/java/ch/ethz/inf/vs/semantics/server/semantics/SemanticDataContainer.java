@@ -67,7 +67,7 @@ public class SemanticDataContainer {
 			InputStream questions = getClass().getResourceAsStream("/question.n3");
 			// UGLY Hack needed since the server can not access his own
 			// resources (COAP bug)
-			SemanticDescription desc = new SemanticDescription("SEMSERV", "coap://" + Inet4Address.getLocalHost().getHostAddress() + ":5681", fileContainer);
+			SemanticDescription desc = new SemanticDescription("SEMSERV", "coap://localhost:5681", fileContainer);
 			desc.processFile(IOUtils.toString(questions));
 			semantics.put("SEMSERV", desc);
 			activeKeys.add("SEMSERV");
@@ -151,7 +151,12 @@ public class SemanticDataContainer {
 				r = Reasoner.doProof(fileContainer.toFile().getAbsolutePath(), uris, temp.getAbsolutePath(), false, false);
 			} else {
 				N3Document result = Reasoner.proofGoal(fileContainer.toFile().getAbsolutePath(), uris, temp.getAbsolutePath(), false, true);
-
+				for(Prefix prefix: result.getPrefixes().values()){
+					if(prefix.getUri().startsWith("file://")){
+						String[] parts = prefix.getUri().split("/");
+						prefix.setUri(parts[parts.length-1]);
+					}
+				}
 				BlankNodePropertyList bn = null;
 				for (N3Element.Statement k : result.statements) {
 					if (k instanceof BlankNodePropertyList) {
