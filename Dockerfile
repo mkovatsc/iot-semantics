@@ -13,4 +13,4 @@ RUN bash install.sh
 WORKDIR /usr/src/app
 RUN mvn install
 EXPOSE 8080
-CMD ["/usr/bin/java", "-jar","semantics-ide-1.0-SNAPSHOT.jar"]
+CMD ["/usr/bin/java", "-jar","semantic-ide-1.0-SNAPSHOT.jar"]

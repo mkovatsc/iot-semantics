@@ -18,7 +18,7 @@
 		<module>parser</module>
 		<module>reasoner</module>
 		<module>reasoning-server</module>
-		<module>semantics-ide</module>
+		<module>semantic-ide</module>
 	</modules>
 	
 </project>
