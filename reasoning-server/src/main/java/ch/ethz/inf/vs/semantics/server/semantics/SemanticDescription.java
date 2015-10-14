@@ -71,7 +71,7 @@ public class SemanticDescription {
 		if (host.equals("127.0.1.1")) {
 			host = "127.0.0.1";
 		}
-		n3file += "\n" + "<coap://" + host + ":" + parsedUri.getPort() + "> a local:url.";
+		n3file += "\n" + "\"coap://" + host + ":" + parsedUri.getPort() + "\" a local:url.";
 		String newFile = N3Utils.replaceN3Prefix(n3file, oldPrefix, newPrefix, namespace);
 		loadFile(newFile);
 		return newFile;
