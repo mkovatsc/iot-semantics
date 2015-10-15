@@ -159,6 +159,7 @@ public class RemoteWorkspace extends Workspace {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			WorkspaceInfo info = getWorkspaceInfo();
+			info.setBackup(getBackup());
 			mapper.writeValue(getFile(), info);
 		} catch (IOException e) {
 			e.printStackTrace();
