@@ -53,6 +53,7 @@ public class BackupResource {
 		usecases.add(new UseCase("Thermostat", "thermostat_no_question"));
 		usecases.add(new UseCase("Moving Robots", "bots"));
 		usecases.add(new UseCase("Smart Home", "smarthome"));
+		usecases.add(new UseCase("DEMO Queries", "demo_queries"));
 		return usecases;
 	}
 

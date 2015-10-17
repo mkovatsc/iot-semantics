@@ -77,8 +77,8 @@ public class SemanticDataContainer {
 	}
 
 	public void addActiveEndpoint(String ep) {
-		activeKeys.add(ep);
-		updateAnswerFile();
+		if(activeKeys.add(ep))
+			updateAnswerFile();
 	}
 
 	public void removeInactiveEndpoint(Collection<String> inactiveKeys) {

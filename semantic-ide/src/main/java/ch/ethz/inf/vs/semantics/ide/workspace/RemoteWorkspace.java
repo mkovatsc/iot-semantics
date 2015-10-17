@@ -77,6 +77,7 @@ public class RemoteWorkspace extends Workspace {
 
 	@Override
 	public Collection<Device> getDevices() {
+		synchronizeDevices(1000);
 		return devices;
 	}
 
@@ -93,7 +94,7 @@ public class RemoteWorkspace extends Workspace {
 	@Override
 	public String executeQuery(String goal, String input, boolean raw) throws Exception {
 		CoapClient c = new CoapClient();
-		c.setTimeout(5000);
+		c.setTimeout(15000);
 		c.setURI(url + "/sr/query?raw=" + raw);
 
 		String data = c.post(goal + "\n#####################\n" + input, MediaTypeRegistry.APPLICATION_JSON).getResponseText();
@@ -126,7 +127,7 @@ public class RemoteWorkspace extends Workspace {
 	@Override
 	public String planMashup(String goal, String input) throws Exception {
 		CoapClient c = new CoapClient();
-		c.setTimeout(5000);
+		c.setTimeout(15000);
 		c.setURI(url + "/sr/mashup");
 
 		String data = c.post(goal + "\n#####################\n" + input, MediaTypeRegistry.APPLICATION_JSON).getResponseText();

@@ -14,7 +14,7 @@ import java.util.*;
 
 public class ResourceDirectorySynchronizationService {
 
-	public static final String DEMO_IP = "127.0.0.1";
+	public static final String DEMO_IP = "[2001:470:cafe::38b2:cf50]";
 	private static final Logger logger = LogManager.getLogger();
 	private final CoapServer server;
 	private final String id = UUID.randomUUID().toString();
@@ -26,7 +26,7 @@ public class ResourceDirectorySynchronizationService {
 		this.server = server;
 		this.semanticDataContainer = semanticDataContainer;
 		Timer timer = new Timer();
-		timer.schedule(new SynchronizationTask(), 1000, 30000);
+		timer.schedule(new SynchronizationTask(), 10000, 6000);
 	}
 
 	/**

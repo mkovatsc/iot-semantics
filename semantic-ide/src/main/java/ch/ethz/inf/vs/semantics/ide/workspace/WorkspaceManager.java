@@ -25,7 +25,7 @@ public class WorkspaceManager {
 			try {
 				WorkspaceInfo workspaceinfo = mapper.readValue(ws, WorkspaceInfo.class);
 				createWorkspace(workspaceinfo);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
