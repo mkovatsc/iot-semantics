@@ -11,65 +11,69 @@ import java.util.Map;
 public class ExecutionPlan {
 	public final ReferenceManager refManager;
 	Map<String, Request> requests;
-	private IRequestFactory factory;
+	private final ExecutionPlan.IRequestFactory factory;
 
-	public ExecutionPlan(String plan, IRequestFactory factory) {
-		this.refManager = new ReferenceManager();
+	public ExecutionPlan(String plan, ExecutionPlan.IRequestFactory factory) {
+		refManager = new ReferenceManager();
 		this.factory = factory;
 		JSONObject obj = new JSONObject(plan);
 		try {
-			this.refManager.setRelated(obj.getString("related"));
+			refManager.setRelated(obj.getString("related"));
 		} catch (JSONException ex) {
 
 		}
-		parse(obj);
+		this.parse(obj);
 	}
 
 	private void parse(JSONObject obj) {
 		JSONArray objRequests = obj.getJSONArray("requests");
-		requests = new HashMap<String, Request>();
+		this.requests = new HashMap<String, Request>();
 		for (int i = 0; i < objRequests.length(); i++) {
-			Request req = parseRequest(objRequests.getJSONObject(i));
-			requests.put(req.getID(), req);
+			Request req = this.parseRequest(objRequests.getJSONObject(i));
+			this.requests.put(req.getID(), req);
 		}
 		for (int i = 0; i < objRequests.length(); i++) {
 			JSONObject item = objRequests.getJSONObject(i);
 			if (item.has("dependencies")) {
 				JSONArray dependencies = item.getJSONArray("dependencies");
-				int id = item.getInt("id");
-				Request r = requests.get(id);
+				String id = item.getString("id");
+				Request r = this.requests.get(id);
 				for (int j = 0; j < dependencies.length(); j++) {
-					r.addDependency(requests.get(dependencies.getInt(j)));
+					r.addDependency(this.requests.get(dependencies.getString(j)));
 				}
 			}
 		}
 	}
 
-	private Request parseRequest(JSONObject jsonObject) {
-		RequestValue method = unserialize(jsonObject.get("method"));
-		RequestValue uri = unserialize(jsonObject.get("uri"));
-		RequestValue reqBody = null;
-		if (jsonObject.has("reqBody"))
-			reqBody = unserialize(jsonObject.get("reqBody"));
-		RequestValue resp = null;
-		if (jsonObject.has("resp"))
-			resp = unserialize(jsonObject.get("resp"));
+	public Map<String, Request> getRequests() {
+		return requests;
+	}
 
-		return factory.getRequest(jsonObject.getString("id"), method, uri, reqBody, resp);
+	private Request parseRequest(JSONObject jsonObject) {
+		ExecutionPlan.RequestValue method = this.unserialize(jsonObject.get("method"));
+		ExecutionPlan.RequestValue uri = this.unserialize(jsonObject.get("uri"));
+		ExecutionPlan.RequestValue reqBody = null;
+		if (jsonObject.has("reqBody"))
+			reqBody = this.unserialize(jsonObject.get("reqBody"));
+		ExecutionPlan.RequestValue resp = null;
+		if (jsonObject.has("resp"))
+			resp = this.unserialize(jsonObject.get("resp"));
+
+		return this.factory.getRequest(jsonObject.getString("id"), method, uri, reqBody, resp);
 
 	}
 
-	private RequestValue unserialize(Object val) {
+	private ExecutionPlan.RequestValue unserialize(Object val) {
 		if (val instanceof JSONObject) {
 			String ref = ((JSONObject) val).getString("ref");
 			if (ref != null) {
-				return new ReferenceValue(ref);
+				return new ExecutionPlan.ReferenceValue(ref);
 			}
 		} else if (val instanceof JSONArray) {
-			ListValue values = new ListValue();
+			ExecutionPlan.ListValue values = new ExecutionPlan.ListValue();
 
 			for (int i = 0; i < ((JSONArray) val).length(); i++) {
-				values.add(unserialize(((JSONArray) val).get(i)));
+				values.add(this.unserialize(((JSONArray) val).get(i)));
 			}
 			return values;
 
@@ -80,23 +84,23 @@ public class ExecutionPlan {
 	}
 
 	public void addTransformer(Transformer t) {
-		refManager.addTransformer(t);
+		this.refManager.addTransformer(t);
 	}
 
-	public <T> void execute(final ExecutionPlan.RequestCallback callback) {
-		execute(callback, null);
+	public <T> void execute(RequestCallback callback) {
+		this.execute(callback, null);
 	}
 
-	public <T> void execute(final ExecutionPlan.RequestCallback callback, T result) {
-		for (final Request r : requests.values()) {
+	public <T> void execute(final RequestCallback callback, T result) {
+		for (final Request r : this.requests.values()) {
 			if (!r.isDone() && !r.isRunning() && r.isExecutable()) {
-				r.execute(new RequestCallback() {
+				r.execute(new ExecutionPlan.RequestCallback() {
 					@Override
 					public void onComplete(Object result) {
-						if (r.resp instanceof ReferenceValue) {
-							refManager.set(((ReferenceValue) r.resp).ref, result);
+						if (r.resp instanceof ExecutionPlan.ReferenceValue) {
+							ExecutionPlan.this.refManager.set(((ExecutionPlan.ReferenceValue) r.resp).ref, result);
 						}
-						execute(callback, result);
+						ExecutionPlan.this.execute(callback, result);
 					}
 				});
 			} else if (r.isDone()) {
@@ -107,29 +111,29 @@ public class ExecutionPlan {
 		}
 	}
 
-	public static interface RequestValue {
+	public interface RequestValue {
 
 	}
 
-	static public interface IRequestFactory {
-		public Request getRequest(String id, RequestValue method, RequestValue uri, RequestValue reqBody, RequestValue resp);
+	public interface IRequestFactory {
+		Request getRequest(String id, ExecutionPlan.RequestValue method, ExecutionPlan.RequestValue uri, ExecutionPlan.RequestValue reqBody, ExecutionPlan.RequestValue resp);
 	}
 
-	static public interface RequestCallback {
-		public void onComplete(Object result);
+	public interface RequestCallback {
+		void onComplete(Object result);
 	}
 
-	static public abstract class Request {
+	public abstract static class Request {
 
 		public String id;
-		public RequestValue method;
-		public RequestValue uri;
-		public RequestValue reqBody;
-		public RequestValue resp;
+		public ExecutionPlan.RequestValue method;
+		public ExecutionPlan.RequestValue uri;
+		public ExecutionPlan.RequestValue reqBody;
+		public ExecutionPlan.RequestValue resp;
 		public boolean running;
 		public boolean done;
 
-		public Request(String id, RequestValue method, RequestValue uri, RequestValue reqBody, RequestValue resp) {
+		public Request(String id, ExecutionPlan.RequestValue method, ExecutionPlan.RequestValue uri, ExecutionPlan.RequestValue reqBody, ExecutionPlan.RequestValue resp) {
 			this.id = id;
 			this.method = method;
 			this.uri = uri;
@@ -137,29 +141,29 @@ public class ExecutionPlan {
 			this.resp = resp;
 		}
 
-		private ArrayList<Request> dependencies = new ArrayList<Request>();
+		private final ArrayList<Request> dependencies = new ArrayList<Request>();
 
-		public abstract void execute(RequestCallback callback);
+		public abstract void execute(ExecutionPlan.RequestCallback callback);
 
 		public String getID() {
-			return id;
+			return this.id;
 		}
 
 		public void addDependency(Request request) {
 
-			dependencies.add(request);
+			this.dependencies.add(request);
 		}
 
 		public boolean isRunning() {
-			return running;
+			return this.running;
 		}
 
 		public boolean isDone() {
-			return done;
+			return this.done;
 		}
 
 		public boolean isExecutable() {
-			for (Request d : dependencies) {
+			for (Request d : this.dependencies) {
 				if (!d.isDone()) {
 					return false;
 				}
@@ -168,7 +172,7 @@ public class ExecutionPlan {
 		}
 	}
 
-	public class ReferenceValue implements RequestValue {
+	public class ReferenceValue implements ExecutionPlan.RequestValue {
 		public final String ref;
 
 		public ReferenceValue(String ref) {
@@ -177,12 +181,12 @@ public class ExecutionPlan {
 
 		@Override
 		public String toString() {
-			return refManager.get(ref);
+			return ExecutionPlan.this.refManager.get(this.ref);
 		}
 	}
 
-	public class StringValue implements RequestValue {
-		private String value;
+	public class StringValue implements ExecutionPlan.RequestValue {
+		private final String value;
 
 		public StringValue(String value) {
 			this.value = value;
@@ -190,20 +194,20 @@ public class ExecutionPlan {
 
 		@Override
 		public String toString() {
-			return value;
+			return this.value;
 		}
 
 	}
 
-	public class ListValue extends ArrayList<RequestValue> implements RequestValue {
+	public class ListValue extends ArrayList<ExecutionPlan.RequestValue> implements ExecutionPlan.RequestValue {
 
 		private static final long serialVersionUID = -1256112403589855134L;
 
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			for (RequestValue v : this) {
-				sb.append(v.toString());
+			for (ExecutionPlan.RequestValue v : this) {
+				sb.append(v);
 			}
 			return sb.toString();
 		}
